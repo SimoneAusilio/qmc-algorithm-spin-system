@@ -40,15 +40,15 @@ class Chessboard:
 
         #To calculate the alternate position for coloring, use the outer function,
         #which results in two vectors, and the modulus is 2.
-        z1 = np.add.outer(range(m), range(L)) % 2
+        z1 = np.add.outer(range(2*m), range(L)) % 2
 
         self.binary_chessboard = z1
 
         "initializing the white square of the chessboard with fixed wordline configuration"
-        self.worldlines_board = np.empty((m,L), dtype=Square)
+        self.worldlines_board = np.empty((2*m,L), dtype=Square)
 
         for j in range(L):
-            for i in range(m):
+            for i in range(2*m):
                 if (i+j)%2 == 1:
                     "if there are black square, no information is needed"
                     self.worldlines_board[i][j] = np.nan
