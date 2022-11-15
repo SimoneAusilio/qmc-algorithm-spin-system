@@ -15,36 +15,40 @@ from matplotlib import collections  as mc
 
 class Chessboard:
     "A Chessboard with worldlines"
-    def __init__(self,L,Beta,Dtau,Jx,Jz):
+    def __init__(self,L,Beta,m,Jx,Jz):
         "private variables size & extent, weight_list, binary_chessboard, worldlines_board"
-    
+        self.Jx = Jx
+        self.Jz = Jz
         self.size = L
+        self.Dtau = Beta/m
+        self.m = m
+        self.Beta = Beta
 
         self.weight_list = [
-            np.exp(Dtau*Jx/4)*np.cosh(Dtau*Jx/2),
-            np.exp(-Dtau*Jx/4)*np.sinh(Dtau*Jx/2),
-            np.exp(-Dtau*Jz/4)
+            np.exp(self.Dtau*Jx/4)*np.cosh(self.Dtau*Jx/2),
+            np.exp(-self.Dtau*Jx/4)*np.sinh(self.Dtau*Jx/2),
+            np.exp(-self.Dtau*Jz/4)
         ]
 
         "create the chessboard"
 
         #Create an array x and y that stores all integer between 0 and L,
         x = np.arange(0, L,1)
-        y = np.arange(0, Beta//Dtau,1)
+        y = np.arange(0, m,1)
         #Limits of our chessboard
         self.extent = (np.min(x), np.max(x)+1, np.min(y), np.max(y)+1)
 
         #To calculate the alternate position for coloring, use the outer function,
         #which results in two vectors, and the modulus is 2.
-        z1 = np.add.outer(range(int(Beta/Dtau)), range(L)) % 2
+        z1 = np.add.outer(range(m), range(L)) % 2
 
         self.binary_chessboard = z1
 
         "initializing the white square of the chessboard with fixed wordline configuration"
-        self.worldlines_board = np.empty((Beta//Dtau,L), dtype=Square)
+        self.worldlines_board = np.empty((m,L), dtype=Square)
 
         for j in range(L):
-            for i in range(Beta//Dtau):
+            for i in range(m):
                 if (i+j)%2 == 1:
                     "if there are black square, no information is needed"
                     self.worldlines_board[i][j] = np.nan
