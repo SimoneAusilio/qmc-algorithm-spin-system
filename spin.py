@@ -12,6 +12,7 @@ def S_down (sign):
     return -sign if sign==1 else 0
 
 def energy (Jx, Jz, config):
+    '''Returns the energy of the configuration'''
     ex=0
     ez=0
     N=len(config)
