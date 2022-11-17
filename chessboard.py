@@ -6,7 +6,11 @@ from matplotlib import collections  as mc
 L = 8
 Beta = 20
 Dtau = 2
-
+z1 = np.add.outer(range(2*5), range(5)) % 2
+z1[9][4] = 0
+#plt.imshow(z1, cmap='binary_r', interpolation='nearest', extent=[0,5,0,10], alpha=1, aspect = 1)
+print(z1)
+plt.show()
 def Print_Chessboard(L,Beta,Dtau):
     #Declare the size of the interval dx, dy.
     (dx, dy) = (1, 1)
@@ -71,9 +75,10 @@ def update(config):
     lc = mc.LineCollection(lines, colors=c, linewidths=4)
     ax.add_collection(lc)
 
-update(init_config())
-
+#update(init_config())
 
 # ax.autoscale()
 # ax.margins(0.1)
 plt.show()
+
+

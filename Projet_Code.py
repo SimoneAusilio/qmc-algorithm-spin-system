@@ -34,15 +34,15 @@ class Chessboard:
         "create the chessboard"
 
         #Create an array x and y that stores all integer between 0 and L,
-        x = np.arange(0, L,1)
-        y = np.arange(0, m,1)
+        #x = np.arange(0, L,1)
+        #y = np.arange(0, m,1)
         #Limits of our chessboard
-        self.extent = (np.min(x), np.max(x)+1, np.min(y), np.max(y)+1)
+        #self.extent = (np.min(x), np.max(x)+1, np.min(y), 2*(np.max(y)+1))
+        self.extent = [0,L,0,2*m]
 
         #To calculate the alternate position for coloring, use the outer function,
         #which results in two vectors, and the modulus is 2.
         z1 = np.add.outer(range(2*m), range(L)) % 2
-
         self.binary_chessboard = z1
 
         "initializing the white square of the chessboard with fixed wordline configuration"
@@ -50,12 +50,12 @@ class Chessboard:
 
         for j in range(L):
             for i in range(2*m):
-                if (i+j)%2 == 1:
+                if (i+j)%2 == 0:
                     "if there are black square, no information is needed"
                     self.worldlines_board[i][j] = np.nan
                 else:
                     "instantiating white squares"
-                    if i%2 == 0 and j%2 == 0:
+                    if j%2 == 0:
                         self.worldlines_board[i][j] = Square(2,self)
                     else:
                         self.worldlines_board[i][j] = Square(1,self)
@@ -85,7 +85,7 @@ class Chessboard:
         
         for j in range(0,b):
             for i in range(0,a):
-                if (j+i)%2 == 0:
+                if (j+i)%2 == 1:
                     #scanning all the white square
                     #add to lines[] the corresponding segment for a given position and type of square
                     sq_t = config[j][i].square_type
@@ -113,6 +113,8 @@ class Chessboard:
         color_red = (1, 0, 0, 1)
         lc = mc.LineCollection(lines, colors=color_red, linewidths=4)
         ax.add_collection(lc)
+        ax.xaxis.tick_top()
+        ax.invert_yaxis()
 
         plt.show()
     
@@ -126,21 +128,26 @@ class Chessboard:
 
         "reportering the possible black square for a local update"
         possible_update = []
-        for j in range(0,L-2,2):
-            for i in range(0,m-2,2):
-                left_c = config[i][j]._get_square_type()
-                if left_c == 5 or left_c == 2:
-                    right_c = config [i][j+2]._get_square_type()
-                    if right_c == 2 or right_c == 6:
-                        possible_update.append([i,j+1,left_c,right_c])
-        print("phase 1")
+        for j in range(0,L-2):
+            for i in range(0,2*m-2):
+                if (i+j)%2 == 1:
+                    left_c = config[i][j]._get_square_type()
+                    if left_c == 5 or left_c == 2:
+                        right_c = config [i][j+1]._get_square_type()
+                        if right_c == 2 or right_c == 6:
+                            possible_update.append([i,j+1,left_c,right_c])
+                            self.binary_chessboard[i][j] = 1
+        print(possible_update)
         "Draw one at random and see if it is accepted"
         #left,right,up,down_c are the old configurations, Left, Right,Up,Down_c are the new"
+        if len(possible_update) == 0  : 
+            print("stationary state")
+            return None
         random_draw = randint(0,len(possible_update)-1)
         i,j,left_c,right_c = possible_update[random_draw]
         up_c = config[i+1,j]._get_square_type()
         down_c = config[i-1,j]._get_square_type()
-        print("phase 2")
+        
         # computing the new conf
         if left_c == 5: Left_c = 1
         else : Left_c = 6
@@ -150,7 +157,7 @@ class Chessboard:
         else : Up_c = 2
         if down_c == 1 : Down_c = 4
         else : Down_c = 2
-        print(left_c,Left_c)
+        
         #computing DeltaE
         W_i = 0
         W_f = 0
@@ -163,11 +170,12 @@ class Chessboard:
         "Do the change if it was accepted"
         #metropolis accepting protocol and changing conf
         if Delta_W >= random():
-            print("phase 5")
+            print("accepted")
             config[i-1][j] = Square(Down_c,self)
             config[i+1][j] = Square(Up_c,self)
             config[i][j-1] = Square(Left_c,self)
             config[i][j+1] = Square(Right_c,self)  
+        else : print("rejected")
 
         #return new energy?           
 
