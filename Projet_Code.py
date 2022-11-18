@@ -50,12 +50,12 @@ class Chessboard:
 
         for j in range(L):
             for i in range(2*m):
-                if (i+j)%2 == 1:
+                if (i+j)%2 == 0:
                     "if there are black square, no information is needed"
                     self.worldlines_board[i][j] = np.nan
                 else:
                     "instantiating white squares"
-                    if i%2 == 0 and j%2 == 0:
+                    if i%2 == 1 and j%2 == 0:
                         self.worldlines_board[i][j] = Square(2,self)
                     else:
                         self.worldlines_board[i][j] = Square(1,self)
@@ -85,7 +85,7 @@ class Chessboard:
         
         for j in range(0,b):
             for i in range(0,a):
-                if (j+i)%2 == 0:
+                if (j+i)%2 == 1:
                     #scanning all the white square
                     #add to lines[] the corresponding segment for a given position and type of square
                     sq_t = config[j][i].square_type

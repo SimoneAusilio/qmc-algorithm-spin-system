@@ -12,43 +12,32 @@ class Configuration:
         self.Jx=chess.Jx
         self.Jz=chess.Jz
         self.m=chess.m
-        self.config=np.zeros((2*self.m, self.size))
-        for i in range(self.m):
-            k=self.m-1-i
+        self.config=np.zeros((2*self.m, self.size), dtype=int)
+        # iteration over of rows from the bottom
+        for i in range(2+self.m-1, -1, -1):
+            print(i)
+            # iteration over columns of the square
             for j in range(chess.size):
-                if (k+j)%2==0:
-                    n=chess._get_square(k, j)
-                    # cases
-                    if n==1:
-                        self.config[2*k][j]=1
-                        self.config[2*k][j+1]=-1
-                        self.config[2*k+1][j]=1
-                        self.config[2*k+1][(j+1)%self.size]=-1
-                    elif n==2:
-                        self.config[2*k][j]=-1
-                        self.config[2*k][(j+1)%self.size]=1
-                        self.config[2*k+1][j]=-1
-                        self.config[2*k+1][(j+1)%self.size]=1
-                    elif n==3:
-                        self.config[2*k][j]=-1
-                        self.config[2*k][(j+1)%self.size]=1
-                        self.config[2*k+1][j]=1
-                        self.config[2*k+1][(j+1)%self.size]=-1
-                    elif n==4:
-                        self.config[2*k][j]=1
-                        self.config[2*k][(j+1)%self.size]=-1
-                        self.config[2*k+1][j]=-1
-                        self.config[2*k+1][(j+1)%self.size]=1
+                print(j)
+                if (i+j)%2==1:  # positions of white squares
+                    n=chess.worldlines_board[i][j].square_type
+                    print(n)
+                    # cases (same order from fig. 10.1 of the chapter)
+                    if n==1 or n==4:
+                        self.config[i][j]=1
+                        self.config[i][j+1]=-1
+                    elif n==2 or n==3:
+                        self.config[i][j]=-1
+                        self.config[i][j+1]=1
                     elif n==5:
-                        self.config[2*k][j]=1
-                        self.config[2*k][(j+1)%self.size]=1
-                        self.config[2*k+1][j]=1
-                        self.config[2*k+1][(j+1)%self.size]=1
-                    else:
-                        self.config[2*k][j]=-1
-                        self.config[2*k][(j+1)%self.size]=-1
-                        self.config[2*k+1][j]=-1
-                        self.config[2*k+1][(j+1)%self.size]=-1
+                        self.config[i][j]=1
+                        self.config[i][j+1]=1
+                    elif n==6:
+                        self.config[i][j]=-1
+                        self.config[i][j+1]=-1
+                print(self.config)
+                print("\n")
+
         
         def get_energy(self, i):
             '''Returns the enrgy of the configuration at row j'''

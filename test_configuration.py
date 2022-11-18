@@ -3,9 +3,9 @@ import spin
 import Projet_Code
 
 '''Test for two and three spins'''
-L=4
+L=5
 Beta=20
-m=1
+m=2
 Jx=1
 Jz=2
 chess=Projet_Code.Chessboard(L, Beta, m, Jx, Jz)
