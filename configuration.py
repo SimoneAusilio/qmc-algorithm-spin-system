@@ -52,5 +52,5 @@ class Configuration:
                         self.config[(i+1)%(2*self.m)][j+1]=-1
 
     def get_energy(self, i):
-        '''Returns the enrgy of the configuration at row j'''
-        return spin.energy(self.Jx, self.Jz, self.config[i])
+        '''Returns the enrgy of the configuration at row i'''
+        return spin.energy(self, i)
