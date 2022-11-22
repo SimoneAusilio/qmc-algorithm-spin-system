@@ -91,7 +91,7 @@ class Chessboard:
                     sq_t = config[j][i].square_type
                     if sq_t == 1 or sq_t == 5:
                         #vertical left line
-                        lines.append([(i,j),(i,(j+1)%b)]) # TODO : maybe need to change
+                        lines.append([(i,j),(i,(j+1))]) # TODO : maybe need to change
                     if sq_t == 2 or sq_t == 5:
                         #vertical right line
                         lines.append([(i+1,j),(i+1,j+1)])
@@ -152,13 +152,13 @@ class Chessboard:
         "Draw one at random and see if it is accepted"
         #left,right,up,down_c are the old configurations, Left, Right,Up,Down_c are the new"
         if len(possible_update) == 0  : 
-            print("stationary state")
+            #print("stationary state")
             return None
         random_draw = randint(0,len(possible_update)-1)
         i,j,left_c,right_c = possible_update[random_draw]
         up_c = config[(i-1)%(2*m),j]._get_square_type()
         down_c = config[(i+1)%(2*m),j]._get_square_type()
-        print("config left right up down:",left_c,right_c,up_c,down_c )
+        #print("config left right up down:",left_c,right_c,up_c,down_c )
         
         # computing the new conf
 
