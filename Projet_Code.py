@@ -169,7 +169,7 @@ class Chessboard:
         elif right_c == 6 : Right_c = 1
         elif right_c == 5 : Right_c = 2
         else : Right_c = 6
-        if up_c == 1 : Up_c = 4
+        if up_c == 1 : Up_c = 3
         elif up_c == 3 : Up_c = 2
         elif up_c == 2 : Up_c = 3
         elif up_c == 4 : Up_c = 1

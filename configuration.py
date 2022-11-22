@@ -9,45 +9,48 @@ class Configuration:
     def __init__(self, chess):
         '''Initialize spin configurations'''
         self.size=chess.size+1
-        self.m=chess.Beta//chess.Dtau
         self.Jx=chess.Jx
         self.Jz=chess.Jz
-        self.config=np.zeros(chess.size, self.m)
-        for j, i in itertools.product(range(chess.size), range(2*self.m)):
-            if (i+j)%2==0 and i%2==0:  # white squares on even rows
-                n=chess._get_square(i,j).square_type
-                # cases
-                if n==1:
-                    self.config[i][j]=1
-                    self.config[i][(j+1)%chess.size]=-1
-                    self.config[i+1][j]=1
-                    self.config[i+1][(j+1)%chess.size]=-1
-                elif n==2:
-                    self.config[i][j]=-1
-                    self.config[i][(j+1)%chess.size]=1
-                    self.config[i+1][j]=-1
-                    self.config[i+1][(j+1)%chess.size]=1
-                elif n==3:
-                    self.config[i][j]=-1
-                    self.config[i][(j+1)%chess.size]=1
-                    self.config[i+1][j]=1
-                    self.config[i+1][(j+1)%chess.size]=-1
-                elif n==4:
-                    self.config[i][j]=1
-                    self.config[i][(j+1)%chess.size]=-1
-                    self.config[i+1][j]=-1
-                    self.config[i+1][(j+1)%chess.size]=1
-                elif n==5:
-                    self.config[i][j]=1
-                    self.config[i][(j+1)%chess.size]=1
-                    self.config[i+1][j]=1
-                    self.config[i+1][(j+1)%chess.size]=1
-                else:
-                    self.config[i][j]=-1
-                    self.config[i][(j+1)%chess.size]=-1
-                    self.config[i+1][j]=-1
-                    self.config[i+1][(j+1)%chess.size]=-1
-        
-        def get_energy(self, i):
-            '''Returns the enrgy of the configuration at row j'''
-            return spin.energy(self.Jx, self.Jz, self.config[i])
+        self.m=chess.m
+        self.config=np.zeros((2*self.m, self.size), dtype=int)
+        # iteration over of rows from the bottom
+        for i in range(2*self.m-1, -1, -1):
+            # iteration over columns of the square
+            for j in range(chess.size):
+                if (i+j)%2==1:  # positions of white squares
+                    n=chess.worldlines_board[i][j].square_type
+                    # cases (same order from fig. 10.1 of the chapter)
+                    if n==1:
+                        self.config[i][j]=+1
+                        self.config[i][j+1]=-1
+                        self.config[(i+1)%(2*self.m)][j]=+1
+                        self.config[(i+1)%(2*self.m)][j+1]=-1
+                    elif n==2:
+                        self.config[i][j]=-1
+                        self.config[i][j+1]=+1
+                        self.config[(i+1)%(2*self.m)][j]=-1
+                        self.config[(i+1)%(2*self.m)][j+1]=+1
+                    elif n==3:
+                        self.config[i][j]=-1
+                        self.config[i][j+1]=+1
+                        self.config[(i+1)%(2*self.m)][j]=+1
+                        self.config[(i+1)%(2*self.m)][j+1]=-1
+                    elif n==4:
+                        self.config[i][j]=+1
+                        self.config[i][j+1]=-1
+                        self.config[(i+1)%(2*self.m)][j]=-1
+                        self.config[(i+1)%(2*self.m)][j+1]=+1
+                    elif n==5:
+                        self.config[i][j]=+1
+                        self.config[i][j+1]=+1
+                        self.config[(i+1)%(2*self.m)][j]=+1
+                        self.config[(i+1)%(2*self.m)][j+1]=+1
+                    elif n==6:
+                        self.config[i][j]=-1
+                        self.config[i][j+1]=-1
+                        self.config[(i+1)%(2*self.m)][j]=-1
+                        self.config[(i+1)%(2*self.m)][j+1]=-1
+
+    def get_energy(self, i):
+        '''Returns the enrgy of the configuration at row i'''
+        return spin.energy(self, i)
