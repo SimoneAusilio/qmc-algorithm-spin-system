@@ -169,7 +169,7 @@ class Chessboard:
         elif right_c == 6 : Right_c = 1
         elif right_c == 5 : Right_c = 2
         else : Right_c = 6
-        if up_c == 1 : Up_c = 3
+        if up_c == 1 : Up_c = 4
         elif up_c == 3 : Up_c = 2
         elif up_c == 2 : Up_c = 3
         elif up_c == 4 : Up_c = 1
@@ -179,7 +179,7 @@ class Chessboard:
         elif down_c  == 2 : Down_c = 4
         else : Down_c = 1
         
-        print("New left,right,up,down:", Left_c,Right_c,Up_c,Down_c)
+        #print("New left,right,up,down:", Left_c,Right_c,Up_c,Down_c)
         #computing DeltaE
         W_i = 0
         W_f = 0
@@ -192,8 +192,6 @@ class Chessboard:
         "Do the change if it was accepted"
         #metropolis accepting protocol and changing conf
         if Delta_W >= random():
-            print("change selected",i,j)
-            print(Left_c,Right_c,Up_c,Down_c)
             config[(i+1)%(2*m)][j] = Square(Down_c,self)
             #print("down:", (i+1)%(2*m),j,"new type",Down_c)
             config[(i-1)%(2*m)][j] = Square(Up_c,self)
