@@ -38,13 +38,13 @@ class Chessboard:
         #y = np.arange(0, m,1)
         #Limits of our chessboard
         #self.extent = (np.min(x), np.max(x)+1, np.min(y), 2*(np.max(y)+1))
-        self.extent = [0,L,0,2*m]
+        self.extent = [0,L,2*m,0]
 
         #To calculate the alternate position for coloring, use the outer function,
         #which results in two vectors, and the modulus is 2.
         z1 = np.add.outer(range(2*m), range(L)) % 2
         self.binary_chessboard = z1
-
+        
         "initializing the white square of the chessboard with fixed wordline configuration"
         self.worldlines_board = np.empty((2*m,L), dtype=Square)
 
@@ -91,7 +91,7 @@ class Chessboard:
                     sq_t = config[j][i].square_type
                     if sq_t == 1 or sq_t == 5:
                         #vertical left line
-                        lines.append([(i,j),(i,j+1)]) # TODO : maybe need to change
+                        lines.append([(i,j),(i,(j+1)%b)]) # TODO : maybe need to change
                     if sq_t == 2 or sq_t == 5:
                         #vertical right line
                         lines.append([(i+1,j),(i+1,j+1)])
@@ -114,7 +114,8 @@ class Chessboard:
         lc = mc.LineCollection(lines, colors=color_red, linewidths=4)
         ax.add_collection(lc)
         ax.xaxis.tick_top()
-        ax.invert_yaxis()
+        #ax.invert_yaxis()
+
 
         plt.show()
     
@@ -128,15 +129,26 @@ class Chessboard:
 
         "reportering the possible black square for a local update"
         possible_update = []
-        for j in range(0,L-2):
-            for i in range(0,2*m-2):
+        for i in range(0,2*m):
+            for j in range(0,L):
+                "we look for each white square which will if it is type 1, 2 or 5"
+                "if it is it will be the left square of the black square we are going to change around"
                 if (i+j)%2 == 1:
                     left_c = config[i][j]._get_square_type()
                     if left_c == 5 or left_c == 2:
-                        right_c = config [i][j+1]._get_square_type()
+                        "if the left square already has a wordline on its right we look to see if the next"
+                        "white doesn't have one on its left"
+                        right_c = config [i][(j+2)%L]._get_square_type()
                         if right_c == 2 or right_c == 6:
-                            possible_update.append([i,j+1,left_c,right_c])
-                            self.binary_chessboard[i][j] = 1
+                            possible_update.append([i,(j+1)%L,left_c,right_c])
+                    if left_c == 1 : 
+                        right_c = config [i][(j+2)%L]._get_square_type()
+                        if right_c == 5 or right_c == 1 : 
+                            "if the left square does not have a wordline on its right we look to see if "
+                            "the next white has one on its left"
+                            possible_update.append([i,(j+1)%L,left_c,right_c])
+                
+
         print(possible_update)
         "Draw one at random and see if it is accepted"
         #left,right,up,down_c are the old configurations, Left, Right,Up,Down_c are the new"
@@ -145,19 +157,36 @@ class Chessboard:
             return None
         random_draw = randint(0,len(possible_update)-1)
         i,j,left_c,right_c = possible_update[random_draw]
-        up_c = config[i+1,j]._get_square_type()
-        down_c = config[i-1,j]._get_square_type()
+        up_c = config[(i-1)%(2*m),j]._get_square_type()
+        down_c = config[(i+1)%(2*m),j]._get_square_type()
+        print("config up and donw:",up_c,down_c)
+        print("config right and left:",right_c,left_c )
         
         # computing the new conf
-        if left_c == 5: Left_c = 1
-        else : Left_c = 6
+
+        if left_c == 5: 
+            print("it goes in left 5")
+            Left_c = 1
+        elif left_c == 2: 
+            Left_c = 6
+            print("it goes in left 2")
+        else : 
+            Left_c = 5
+            print("it goes in left 1")
         if right_c == 2 : Right_c = 5
-        else : Right_c = 1
-        if up_c == 1 : Up_c = 3
+        elif right_c == 6 : Right_c = 1
+        elif right_c == 5 : Right_c = 2
+        else : Right_c = 6
+        if up_c == 1 : Up_c = 4
+        elif up_c == 3 : Up_c = 2
+        elif up_c == 2 : Up_c = 3
         else : Up_c = 2
-        if down_c == 1 : Down_c = 4
-        else : Down_c = 2
+        if down_c == 1 : Down_c = 3
+        elif down_c == 4 : Down_c = 2
+        elif down_c  == 2 : Down_c = 4
+        else : Down_c = 1
         
+        print("New left,right,up,down:", Left_c,Right_c,Up_c,Down_c)
         #computing DeltaE
         W_i = 0
         W_f = 0
@@ -171,10 +200,12 @@ class Chessboard:
         #metropolis accepting protocol and changing conf
         if Delta_W >= random():
             print("accepted")
-            config[i-1][j] = Square(Down_c,self)
-            config[i+1][j] = Square(Up_c,self)
+            print("change selected",i,j)
+            print(Left_c,Right_c,Up_c,Down_c)
+            config[(i+1)%(2*m)][j] = Square(Down_c,self)
+            config[(i-1)%(2*m)][j] = Square(Up_c,self)
             config[i][j-1] = Square(Left_c,self)
-            config[i][j+1] = Square(Right_c,self)  
+            config[i][(j+1)%L] = Square(Right_c,self)  
         else : print("rejected")
 
         #return new energy?           
