@@ -17,7 +17,7 @@ from random import *
 class Chessboard:
     "A Chessboard with worldlines"
     def __init__(self,L,Beta,m,Jx,Jz):
-        "private variables size & extent, weight_list, binary_chessboard, worldlines_board"
+        "private variables size & extent, weight_list, binary_chessboard, worldsquare_board"
         self.Jx = Jx
         self.Jz = Jz
         self.size = L
@@ -46,38 +46,58 @@ class Chessboard:
         self.binary_chessboard = z1
         
         "initializing the white square of the chessboard with fixed wordline configuration"
-        self.worldlines_board = np.empty((2*m,L), dtype=Square)
+        self.worldsquare_board = np.empty((2*m,L), dtype=Square)
 
         for j in range(L):
             for i in range(2*m):
                 if (i+j)%2 == 0:
                     "if there are black square, no information is needed"
-                    self.worldlines_board[i][j] = np.nan
+                    self.worldsquare_board[i][j] = np.nan
                 else:
                     "instantiating white squares"
                     if j%2 == 0:
-                        self.worldlines_board[i][j] = Square(2,self)
+                        self.worldsquare_board[i][j] = Square(2,self)
                     else:
-                        self.worldlines_board[i][j] = Square(1,self)
+                        self.worldsquare_board[i][j] = Square(1,self)
+
+        "initializing the lines of the worldboard"
+        self.worldlines_board = self._get_worldlines_board()
 
         
                 
     def _get_square(self,i,j):
         "give the square in i,j"
-        return self.worldlines_board[i][j]
+        return self.worldsquare_board[i][j]
 
     def _get_weight(self,sqr_type):
         "give the weight of a given type, type in [1,2,3,4,5,6]"
         return self.weight_list[(sqr_type-1)//2]
 
     def _get_config(self):
-        return self.worldlines_board
+        return self.worldsquare_board
 
-    def _config_to_image(self):
+    def _plot_chessboard_image(self):
         "plot the chessboard with its current wordlines"
+        "Beginning figure"
+        fig, ax = plt.subplots()
 
+        #plotting the chessboard without the worldlines yet
+        plt.imshow(self.binary_chessboard, cmap='binary_r', interpolation='nearest', extent=self.extent, alpha=1, aspect = 1)
+        
+        #getting and plotting the lines in lines[]
+        color_red = (1, 0, 0, 1)
+        lines = self._get_worldlines_board()
+
+        lc = mc.LineCollection(lines, colors=color_red, linewidths=4)
+        ax.add_collection(lc)
+        ax.xaxis.tick_top()
+
+        plt.show()
+        
+
+    def _get_worldlines_board(self):
         "adding all the worldlines to lines[]"
-        config = self.worldlines_board 
+        config = self.worldsquare_board 
         lines = []
 
         b,a = len(config),len(config[0])
@@ -102,28 +122,14 @@ class Chessboard:
                         #diagonal line from right to left
                         lines.append([(i,j),(i+1,j+1)])
         
-
-        "Beginning figure"
-        fig, ax = plt.subplots()
-
-        #plotting the chessboard without the worldlines yet
-        plt.imshow(self.binary_chessboard, cmap='binary_r', interpolation='nearest', extent=self.extent, alpha=1, aspect = 1)
+        return lines
         
-        #plotting the lines in lines[]
-        color_red = (1, 0, 0, 1)
-        lc = mc.LineCollection(lines, colors=color_red, linewidths=4)
-        ax.add_collection(lc)
-        ax.xaxis.tick_top()
-        #ax.invert_yaxis()
-
-
-        plt.show()
     
     def local_update(self):
         "effectuate one step of the local_update algorithme"
         "choose uniformly a black square among the available ones for an update"
         "Use a metropolis rules to choose wether or not a change should happened"
-        config = self.worldlines_board
+        config = self.worldsquare_board
         L = self.size
         m = self.m
 
@@ -198,10 +204,13 @@ class Chessboard:
             #print("up:", (i-1)%(2*m),j,"new type",Up_c)
             config[i][j-1] = Square(Left_c,self)
             config[i][(j+1)%L] = Square(Right_c,self)
-            return True  
+
+            "registring the update"
+            self.worldlines_board = self._get_worldlines_board()
+            return True
             
         else :
-            return False
+            return None
 
         #return new energy?           
 
