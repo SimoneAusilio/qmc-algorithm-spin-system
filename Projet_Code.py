@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import collections  as mc 
 from random import *
-import square
+from square import Square
 
 class Chessboard(Square):
     "A Chessboard with worldlines"
