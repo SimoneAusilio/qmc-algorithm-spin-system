@@ -149,7 +149,6 @@ class Chessboard:
                             possible_update.append([i,(j+1)%L,left_c,right_c])
                 
 
-        print(possible_update)
         "Draw one at random and see if it is accepted"
         #left,right,up,down_c are the old configurations, Left, Right,Up,Down_c are the new"
         if len(possible_update) == 0  : 
@@ -159,20 +158,13 @@ class Chessboard:
         i,j,left_c,right_c = possible_update[random_draw]
         up_c = config[(i-1)%(2*m),j]._get_square_type()
         down_c = config[(i+1)%(2*m),j]._get_square_type()
-        print("config up and donw:",up_c,down_c)
-        print("config right and left:",right_c,left_c )
+        print("config left right up down:",left_c,right_c,up_c,down_c )
         
         # computing the new conf
 
-        if left_c == 5: 
-            print("it goes in left 5")
-            Left_c = 1
-        elif left_c == 2: 
-            Left_c = 6
-            print("it goes in left 2")
-        else : 
-            Left_c = 5
-            print("it goes in left 1")
+        if left_c == 5: Left_c = 1
+        elif left_c == 2: Left_c = 6
+        else :Left_c = 5
         if right_c == 2 : Right_c = 5
         elif right_c == 6 : Right_c = 1
         elif right_c == 5 : Right_c = 2
@@ -180,6 +172,7 @@ class Chessboard:
         if up_c == 1 : Up_c = 4
         elif up_c == 3 : Up_c = 2
         elif up_c == 2 : Up_c = 3
+        elif up_c == 4 : Up_c = 1
         else : Up_c = 2
         if down_c == 1 : Down_c = 3
         elif down_c == 4 : Down_c = 2
@@ -195,18 +188,22 @@ class Chessboard:
         for k in [Left_c,Right_c,Up_c,Down_c]:
             W_f += self._get_weight(k)
         Delta_W = W_f/W_i
-        print(Delta_W)
+        
         "Do the change if it was accepted"
         #metropolis accepting protocol and changing conf
         if Delta_W >= random():
-            print("accepted")
             print("change selected",i,j)
             print(Left_c,Right_c,Up_c,Down_c)
             config[(i+1)%(2*m)][j] = Square(Down_c,self)
+            #print("down:", (i+1)%(2*m),j,"new type",Down_c)
             config[(i-1)%(2*m)][j] = Square(Up_c,self)
+            #print("up:", (i-1)%(2*m),j,"new type",Up_c)
             config[i][j-1] = Square(Left_c,self)
-            config[i][(j+1)%L] = Square(Right_c,self)  
-        else : print("rejected")
+            config[i][(j+1)%L] = Square(Right_c,self)
+            return True  
+            
+        else :
+            return False
 
         #return new energy?           
 
