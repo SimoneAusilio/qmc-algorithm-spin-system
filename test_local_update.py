@@ -30,15 +30,17 @@ ax1.add_collection(lc)
 # energy per spin
 ax2=fig.add_subplot(1, 2, 2)
 ax2.set_title("Energy per spin")
-curve, =ax2.plot([], [])
+curve, =ax2.plot([], [], label = "Energy value")
+average, =ax2.plot([],[], label = "Average energy")
 ax2.set_xlim(0, N)
-ax2.set_ylim(-1, 1)
+ax2.set_ylim(-0.5, -0.4)
 
 
 
-time=[]
-energ=[]
-
+time = []
+energ = []
+avrg_e = []
+cursor = 0
 def worldline_anim(n):
     '''Animation function for update algorithm'''
     # update trial
@@ -46,6 +48,7 @@ def worldline_anim(n):
         chess.local_update()
     conf._update_configuration(chess)
     e=np.average(np.array([conf._get_energy(i) for i in range(2*conf.m)]))/conf.size
+
     # plot update (left)
     current_lines=chess._get_worldlines_board()
     current_lc=mc.LineCollection(current_lines, colors=color_red, linewidths=4)
@@ -54,12 +57,25 @@ def worldline_anim(n):
     
     # plot update (right)
     if len(time)<N: time.append(n)
-    if len(energ)<N: energ.append(e)
+    if len(energ)<N: 
+        energ.append(e)
+        global cursor
+        if cursor == 0 : 
+            avrg_e.append(e)
+            cursor+=1
+        else : 
+            avrg_e.append((avrg_e[-1]*cursor+e)/(cursor+1))
+            cursor += 1
     else:
         energ.insert(N, e)
+        avrg_e.append((avrg_e[-1]*cursor+e)/(cursor+1))
+        cursor += 1
         energ.pop(0)
+        avrg_e.pop(0)
     curve.set_data(time, energ)
-    return (lines, curve)
+    average.set_data(time,avrg_e)
+
+    return (lines, curve, avrg_e)
 
 animation=FuncAnimation(fig, worldline_anim, interval=100, blit=False)
 plt.show()
