@@ -26,7 +26,7 @@ im=ax1.imshow(chess.binary_chessboard, cmap='binary_r', interpolation='nearest',
 color_red=(1, 0, 0, 1)
 lines=chess.worldlines_board
 lc=mc.LineCollection(lines, colors=color_red, linewidths=4)
-#ax1.add_collection(lc)
+ax1.add_collection(lc)
 # energy per spin
 ax2=fig.add_subplot(1, 2, 2)
 ax2.set_title("Energy per spin")
@@ -41,20 +41,17 @@ energ=[]
 
 def worldline_anim(n):
     '''Animation function for update algorithm'''
-    # keeping track of the old lines
-    old_lines = chess._get_worldlines_board()
-    old_lc=mc.LineCollection(old_lines, colors=color_red, linewidths=4)
-    old_lc.remove()
     # update trial
     for i in range(length_cycle):
         chess.local_update()
+    conf._update_configuration(chess)
     e=np.average(np.array([conf._get_energy(i) for i in range(2*conf.m)]))/conf.size
     # plot update (left)
     current_lines=chess._get_worldlines_board()
     current_lc=mc.LineCollection(current_lines, colors=color_red, linewidths=4)
-    ax1.add_collection(current_lc)
+    ax1.collections[0].set_segments(current_lines)
     
-    #current_lc.remove()
+    
     # plot update (right)
     if len(time)<N: time.append(n)
     if len(energ)<N: energ.append(e)
@@ -64,7 +61,7 @@ def worldline_anim(n):
     curve.set_data(time, energ)
     return (lines, curve)
 
-animation=FuncAnimation(fig, worldline_anim, interval=1, blit=False)
+animation=FuncAnimation(fig, worldline_anim, interval=100, blit=False)
 plt.show()
 '''
 # data collection
