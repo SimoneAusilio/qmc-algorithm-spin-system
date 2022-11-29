@@ -18,7 +18,7 @@ class Configuration:
             # iteration over columns of the square
             for j in range(chess.size):
                 if (i+j)%2==1:  # positions of white squares
-                    n=chess.worldlines_board[i][j].square_type
+                    n=chess.worldsquare_board[i][j].square_type
                     # cases (same order from fig. 10.1 of the chapter)
                     if n==1:
                         self.config[i][j]=+1
@@ -51,6 +51,6 @@ class Configuration:
                         self.config[(i+1)%(2*self.m)][j]=-1
                         self.config[(i+1)%(2*self.m)][j+1]=-1
 
-    def get_energy(self, i):
+    def _get_energy(self, i):
         '''Returns the enrgy of the configuration at row i'''
         return spin.energy(self, i)

@@ -6,11 +6,11 @@ def S_z (sign):
     return sign*1/2
 
 def S_up (sign):
-    '''Climbs the spin down'''
+    '''Flips the spin down'''
     return -sign if sign==-1 else 0
 
 def S_down (sign):
-    '''Descends the spin up'''
+    '''Flips the spin up'''
     return -sign if sign==1 else 0
 
 def energy (conf, i):

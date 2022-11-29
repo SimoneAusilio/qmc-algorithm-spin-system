@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import collections  as mc 
 from random import *
-import square
+from square import Square
 
 class Chessboard():
     "A Chessboard with worldlines"
@@ -48,9 +48,9 @@ class Chessboard():
                 else:
                     "instantiating white squares"
                     if j%2 == 0:
-                        self.worldsquare_board[i][j] = square.Square(2)
+                        self.worldsquare_board[i][j] = Square(2)
                     else:
-                        self.worldsquare_board[i][j] = square.Square(1)
+                        self.worldsquare_board[i][j] = Square(1)
 
         "initializing the lines of the worldboard"
         self.worldlines_board = self._get_worldlines_board()
@@ -74,7 +74,7 @@ class Chessboard():
         fig, ax = plt.subplots()
 
         #plotting the chessboard without the worldlines yet
-        plt.imshow(self.binary_chessboard, cmap='binary_r', interpolation='nearest', extent=self.extent, alpha=1, aspect = 1)
+        plt.imshow(self.binary_chessboard, cmap='binary_r', interpolation='nearest', extent=self.extent, alpha=1, aspect=1)
         
         #getting and plotting the lines in lines[]
         color_red = (1, 0, 0, 1)
