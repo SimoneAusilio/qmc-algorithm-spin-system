@@ -46,9 +46,9 @@ class Chessboard(Square):
                 else:
                     "instantiating white squares"
                     if j%2 == 0:
-                        self.worldsquare_board[i][j] = Square(2,self)
+                        self.worldsquare_board[i][j] = Square(2)
                     else:
-                        self.worldsquare_board[i][j] = Square(1,self)
+                        self.worldsquare_board[i][j] = Square(1)
 
         "initializing the lines of the worldboard"
         self.worldlines_board = self._get_worldlines_board()
@@ -72,7 +72,7 @@ class Chessboard(Square):
         fig, ax = plt.subplots()
 
         #plotting the chessboard without the worldlines yet
-        plt.imshow(self.binary_chessboard, cmap='binary_r', interpolation='nearest', extent=self.extent, alpha=1, aspect = 1)
+        plt.imshow(self.binary_chessboard, cmap='binary_r', interpolation='nearest', extent=self.extent, alpha=1, aspect=1)
         
         #getting and plotting the lines in lines[]
         color_red = (1, 0, 0, 1)
