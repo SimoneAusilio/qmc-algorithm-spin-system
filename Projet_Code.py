@@ -4,13 +4,15 @@ from matplotlib import collections  as mc
 from random import *
 import square
 
-class Chessboard(Square):
+class Chessboard():
     "A Chessboard with worldlines"
     def __init__(self,L,Beta,m,Jx,Jz):
         "private variables size & extent, weight_list, binary_chessboard, worldsquare_board, worldlines_board"
         self.Jx = Jx
         self.Jz = Jz
         self.size = L
+        if L%2 == 1 : 
+            self.size = L+1
         self.Dtau = Beta/m
         self.m = m
         self.Beta = Beta
@@ -36,7 +38,7 @@ class Chessboard(Square):
         self.binary_chessboard = z1
         
         "initializing the white square of the chessboard with fixed wordline configuration"
-        self.worldsquare_board = np.empty((2*m,L), dtype=Square)
+        self.worldsquare_board = np.empty((2*m,L), dtype=square.Square)
 
         for j in range(L):
             for i in range(2*m):
@@ -46,9 +48,9 @@ class Chessboard(Square):
                 else:
                     "instantiating white squares"
                     if j%2 == 0:
-                        self.worldsquare_board[i][j] = Square(2,self)
+                        self.worldsquare_board[i][j] = square.Square(2)
                     else:
-                        self.worldsquare_board[i][j] = Square(1,self)
+                        self.worldsquare_board[i][j] = square.Square(1)
 
         "initializing the lines of the worldboard"
         self.worldlines_board = self._get_worldlines_board()
@@ -98,7 +100,7 @@ class Chessboard(Square):
                 if (j+i)%2 == 1:
                     #scanning all the white square
                     #add to lines[] the corresponding segment for a given position and type of square
-                    sq_t = config[j][i].square_type
+                    sq_t = config[j][i]._get_square_type()
                     if sq_t == 1 or sq_t == 5:
                         #vertical left line
                         lines.append([(i,j),(i,(j+1))]) # TODO : maybe need to change
