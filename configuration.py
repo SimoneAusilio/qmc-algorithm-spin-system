@@ -1,6 +1,7 @@
 import itertools
 import numpy as np
 import spin
+import square
 
 
 class Configuration:
@@ -18,7 +19,7 @@ class Configuration:
             # iteration over columns of the square
             for j in range(chess.size):
                 if (i+j)%2==1:  # positions of white squares
-                    n=chess.worldsquare_board[i][j].square_type
+                    n=chess.worldsquare_board[i][j]._get_square_type
                     # cases (same order from fig. 10.1 of the chapter)
                     if n==1:
                         self.config[i][j]=+1

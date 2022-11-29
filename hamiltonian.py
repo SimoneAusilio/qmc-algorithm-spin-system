@@ -16,9 +16,9 @@ def hamiltonian(ket, Jx, Jz):
 # TODO
 def braket(bra, ket):
     '''Returns the braket product between two configurations'''
-    p=1.
+    p=0.
     for j in range(len(bra)):
-        p*=bra[j]*ket[j]
+        p+=bra[j]*ket[j]
     return p
 
 def hamiltonian_matrix(base, Jx, Jz):

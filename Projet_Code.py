@@ -38,7 +38,7 @@ class Chessboard():
         self.binary_chessboard = z1
         
         "initializing the white square of the chessboard with fixed wordline configuration"
-        self.worldsquare_board = np.empty((2*m,L), dtype=square.Square)
+        self.worldsquare_board = np.empty((2*m,L), dtype=Square)
 
         for j in range(L):
             for i in range(2*m):
@@ -88,7 +88,7 @@ class Chessboard():
         
 
     def _get_worldlines_board(self):
-        "adding all the worldlines to lines[]"
+        "return a liste line with all the worldlines in it"
         config = self.worldsquare_board 
         lines = []
 
