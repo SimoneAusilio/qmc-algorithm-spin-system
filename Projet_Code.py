@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib import collections  as mc 
 from random import *
 from square import Square
+import configuration
 
 class Chessboard():
     "A Chessboard with worldlines"
@@ -55,6 +56,8 @@ class Chessboard():
         "initializing the lines of the worldboard"
         self.worldlines_board = self._get_worldlines_board()
 
+        self.average_energy = self._get_average_energy()
+
         
                 
     def _get_square(self,i,j):
@@ -67,25 +70,10 @@ class Chessboard():
 
     def _get_config(self):
         return self.worldsquare_board
-
-    def _plot_chessboard_image(self):
-        "plot the chessboard with its current wordlines"
-        "Beginning figure"
-        fig, ax = plt.subplots()
-
-        #plotting the chessboard without the worldlines yet
-        plt.imshow(self.binary_chessboard, cmap='binary_r', interpolation='nearest', extent=self.extent, alpha=1, aspect=1)
         
-        #getting and plotting the lines in lines[]
-        color_red = (1, 0, 0, 1)
-        lines = self.worldlines_board
-
-        lc = mc.LineCollection(lines, colors=color_red, linewidths=4)
-        ax.add_collection(lc)
-        ax.xaxis.tick_top()
-
-        plt.show()
-        
+    def _get_average_energy(self):
+        conf=configuration.Configuration(self)
+        return np.average(np.array([conf._get_energy(i) for i in range(2*conf.m)]))/conf.size
 
     def _get_worldlines_board(self):
         "return a liste line with all the worldlines in it"
@@ -116,7 +104,24 @@ class Chessboard():
         
         return lines
         
-    
+    def _plot_chessboard_image(self):
+        "plot the chessboard with its current wordlines"
+        "Beginning figure"
+        fig, ax = plt.subplots()
+
+        #plotting the chessboard without the worldlines yet
+        plt.imshow(self.binary_chessboard, cmap='binary_r', interpolation='nearest', extent=self.extent, alpha=1, aspect=1)
+        
+        #getting and plotting the lines in lines[]
+        color_red = (1, 0, 0, 1)
+        lines = self.worldlines_board
+
+        lc = mc.LineCollection(lines, colors=color_red, linewidths=4)
+        ax.add_collection(lc)
+        ax.xaxis.tick_top()
+
+        plt.show()
+
     def local_update(self):
         "effectuate one step of the local_update algorithme"
         "choose uniformly a black square among the available ones for an update"

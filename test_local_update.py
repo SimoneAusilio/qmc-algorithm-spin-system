@@ -27,6 +27,7 @@ color_red=(1, 0, 0, 1)
 lines=chess.worldlines_board
 lc=mc.LineCollection(lines, colors=color_red, linewidths=4)
 ax1.add_collection(lc)
+
 # energy per spin
 ax2=fig.add_subplot(1, 2, 2)
 ax2.set_title("Energy per spin")
