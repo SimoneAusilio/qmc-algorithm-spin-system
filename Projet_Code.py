@@ -27,10 +27,6 @@ class Chessboard():
         "create the chessboard"
 
         #Create an array x and y that stores all integer between 0 and L,
-        #x = np.arange(0, L,1)
-        #y = np.arange(0, m,1)
-        #Limits of our chessboard
-        #self.extent = (np.min(x), np.max(x)+1, np.min(y), 2*(np.max(y)+1))
         self.extent = [0,L,2*m,0]
 
         #To calculate the alternate position for coloring, use the outer function,
