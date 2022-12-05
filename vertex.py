@@ -69,6 +69,7 @@ def is_in(list,a):
 def loop(chess: Projet_Code.Chessboard, random=True):
     key = 0
     '''Makes a random loop and then flips the arrows of the path'''
+    '''Searching a random loop beginning from a random point'''
     # starting square and arrow (chosen at random)
     # make sure that the picked square is white!
     i, j=0, 0
@@ -148,7 +149,7 @@ def loop(chess: Projet_Code.Chessboard, random=True):
         #k+=1
         #print("new path: ",path)
 
-        # returned to starting point?
+        # returned to an already visited square?
         
         #print(track_outward)
         #print("a,b",a,b)
@@ -191,6 +192,115 @@ def loop(chess: Projet_Code.Chessboard, random=True):
         #print("new n :",n)
         if n!=0:
             #print(n)
+            chess.worldsquare_board[path[k][0]][path[k][1]]._update(n)
+        chess.worldlines_board = chess._get_worldlines_board()
+    print("loop done")
+
+def loop2(chess: Projet_Code.Chessboard, random=True):
+    
+    ### WARNING DOESN'T WORK BECAUSE IF THERE ARE LOOPS IN THE LOOP
+    ### THE SQUARE HAS NOT BE UPDATE YET WHEN THE LOOP COME BACK
+    ### SO THE ARROWS AREN'T UPDATED YET
+
+
+    '''Makes a random loop and then flips the arrows of the path'''
+    '''This time trying to turn back to the original square'''
+    key = 0
+    # starting square and arrow (chosen at random)
+    # make sure that the picked square is white!
+    i, j=0, 0
+    while (i+j)%2!=1:
+        i, j=rnd.randint(0, 2*chess.m), rnd.randint(0, chess.size)
+    mu, nu=rnd.randint(0, 2), rnd.randint(0, 2)
+
+    # loop creation
+    path=np.array([i, j, mu, nu])
+    
+    a, b=i, j
+    #visited_cube = [(i,j)]
+    rho, sigma=mu, nu
+
+    # emulation of do-while loop to create the path
+    while True:
+        track_outward = True #to verify in which case we are, summing up all square visited and knowing when there is the loop
+        key +=1 #a verification that the algorithm will not loop infinitly,if key>500 return False
+        v=to_vertices(chess.worldsquare_board[a][b])
+        
+        # outward arrow
+        if v[rho][sigma] == -1:
+            
+            # upper square
+            if rho == 0:
+                a=a-1 if a!=0 else 2*chess.m-1
+                # left
+                if sigma==0:
+                    b=b-1 if b!=0 else chess.size-1
+                    rho, sigma=1, 1
+                #right
+                else:
+                    b=(b+1)%chess.size
+                    rho, sigma=1, 0
+            
+            # lower square
+            else:
+                a=(a+1)%(2*chess.m)
+                if sigma == 0:
+                    b=b-1 if b!=0 else chess.size-1
+                    rho, sigma=0, 1
+                else:
+                    b=(b+1)%chess.size
+                    rho, sigma=0, 0
+            
+
+        # inward arrow 
+        else:
+            track_outward = False
+
+            # find the outward arrows
+            pos = []
+            for k1 in range(2):
+                for k2 in range(2):
+                    if v[k1][k2] == -1:
+                        pos.append([k1,k2])
+            
+            # choose randomly the next direction
+            d=rnd.choice((1, 2))
+            rho, sigma=pos[0] if d==1 else pos[1]
+
+        path=np.vstack((path, [a, b, rho, sigma]))
+
+        # returned to starting point?
+        #boolean,indice = is_in(visited_cube,(a,b))
+        if (a,b)==(i,j) and track_outward:
+            print("a and b, i and j at breaking point",a,b," / ",i,j)
+            break
+        if key == 500: 
+            print("échec")
+            return False
+
+    # flip the arrows and change the squares
+    #if the first arrow is inward we delete it
+    #the first arrow is then always outward and we can flip two by two
+    
+    v=to_vertices(chess.worldsquare_board[path[0][0]][path[0][1]])
+    
+    if v[path[0][2]][path[0][3]]== 1:
+        path = path[1:]
+    
+    #putting the inward and outward arrow near each other
+    path = np.vstack((path,path[0]))
+    path = path[1:]
+    print("ensemble path",path)
+
+    for k in range(0,len(path),2):
+        v=to_vertices(chess.worldsquare_board[path[k][0]][path[k][1]])
+        print("ex vertice",v,"of cube",path[k][0],path[k][1])
+        v[path[k][2]][path[k][3]]*=-1
+        v[path[k+1][2]][path[k+1][3]]*=-1
+        print("new vertice",v)
+        n=to_square(v)
+        print("associtated square: ",n)
+        if n!=0:
             chess.worldsquare_board[path[k][0]][path[k][1]]._update(n)
         chess.worldlines_board = chess._get_worldlines_board()
     print("loop done")
