@@ -34,7 +34,7 @@ ax2.set_title("Energy per spin")
 curve, =ax2.plot([], [], label = "Energy value")
 average, =ax2.plot([],[], label = "Average energy")
 ax2.set_xlim(0, N)
-ax2.set_ylim(-0.5, -0.4)
+ax2.set_ylim(-1, 1)
 
 
 
@@ -78,11 +78,5 @@ def worldline_anim(n):
 
     return (lines, curve, avrg_e)
 
-animation=FuncAnimation(fig, worldline_anim, interval=100, blit=False)
+animation=FuncAnimation(fig, worldline_anim, interval=300, blit=False)
 plt.show()
-'''
-# data collection
-n_warmup=100    # number of simulations made at the beginning
-n_cycles=100    # number of measurements
-
-beta_range=np.arange()'''
