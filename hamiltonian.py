@@ -3,29 +3,14 @@ from numpy.linalg import eigh
 import spin
 from configuration import Configuration
 
-def hamiltonian(ket, Jx, Jz):
-    '''Applies the hamiltonian operator to a spin configuration'''
-    # ket: Nx2 matrix (N number of spins)
-    N=len(ket)
-    new_state=np.zeros((N, 2))
-    if N==2:
-        for j in range(N-1):
-            new_state[j]=Jx/2*(np.dot(spin.S_up_vec(ket[j]), spin.S_down_vec(ket[(j+1)%N]))+\
-                    np.dot(spin.S_up_vec(ket[(j+1)%N]), spin.S_down_vec(ket[j])))+\
-                    Jz*np.dot(spin.S_z_vec(ket[j]), spin.S_z_vec(ket[(j+1)%N]))
-    else:
-        for j in range(N):
-            new_state[j]=Jx/2*(np.dot(spin.S_up_vec(ket[j]), spin.S_down_vec(ket[(j+1)%N]))+\
-                    np.dot(spin.S_up_vec(ket[(j+1)%N]), spin.S_down_vec(ket[j])))+\
-                    Jz*np.dot(spin.S_z_vec(ket[j]), spin.S_z_vec(ket[(j+1)%N]))
-    return new_state
-
-def braket(bra, ket):
-    '''Returns the braket product between two configurations'''
-    p=0.
-    for j in range(len(bra)):
-        p+=np.dot(bra[j], ket[j])
-    return p
+'''Convention
+Spin sign configuration: [+1, -1, ..., -1]
+Vector spin configuration:
+[[1. 0.]
+[0. 1.]
+...
+[0. 1.]]
+'''
 
 def to_spin(config):
     '''Converts from spin sign configuration to vector configuration'''
@@ -35,6 +20,29 @@ def to_spin(config):
         c[i][0]=1 if config[i]==+1 else 0
         c[i][1]=1 if config[i]==-1 else 0
     return c
+
+def hamiltonian(ket, Jx, Jz):
+    '''Applies the hamiltonian operator to a vector spin configuration'''
+    # ket: Nx2 matrix (N number of spins)
+    N=len(ket)
+    new_state=np.zeros((N, 2))
+    # hamiltonian for even white squares in first line
+    for j in range(0, N, 2):
+        new_state[j]=Jx/2*(spin.S_up_vec(ket[j])+spin.S_down_vec(ket[j]))+Jz*spin.S_z_vec(ket[j])
+        new_state[(j+1)%N]=Jx/2*(spin.S_down_vec(ket[(j+1)%N])+spin.S_up_vec(ket[(j+1)%N]))+Jz*spin.S_z_vec(ket[(j+1)%N])
+    # hamiltonian for odd white squares in second line
+    if N>2:
+        for j in range(1, N, 2):
+            new_state[j]=Jx/2*(spin.S_up_vec(ket[j])+spin.S_down_vec(ket[j]))+Jz*spin.S_z_vec(ket[j])
+            new_state[(j+1)%N]=Jx/2*(spin.S_down_vec(ket[(j+1)%N])+spin.S_up_vec(ket[(j+1)%N]))+Jz*spin.S_z_vec(ket[(j+1)%N])
+    return new_state
+
+def braket(bra, ket):
+    '''Returns the braket product between two configurations'''
+    p=0.
+    for j in range(len(bra)):
+        p+=np.dot(bra[j], ket[j])
+    return p
 
 def hamiltonian_matrix(base, Jx, Jz):
     '''Calculates the hamiltonian matrix in the input base'''
@@ -47,9 +55,10 @@ def hamiltonian_matrix(base, Jx, Jz):
     return H
 
 # test for 2, 3, 4 spins
-base_2=np.vstack(([1, 1], [-1, 1], [1, -1], [-1, -1]))
-print(braket(to_spin(base_2[0]), to_spin(base_2[0])))
-# print(hamiltonian_matrix(base_2, Jx=1, Jz=2))
+base_2=np.vstack(([+1, 1], [-1, +1], [+1, -1], [-1, -1]))
+print(to_spin(base_2[0]))
+# print(hamiltonian(to_spin(base_2[0]), Jx=1, Jz=2))
+
 # energies_2=eigh(hamiltonian_matrix(base_2, Jx=1, Jz=2))[0]
 # print(energies_2)
 
