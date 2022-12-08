@@ -92,7 +92,7 @@ class Graph_chessboard():
 
         plt.show()
     
-""" IS NOT WORKING    
+    """ IS NOT WORKING    
     def _get_loops(self):
         "return a list of all differents loops with corresponding coordinates"
         config = self.graph_chessboard 
@@ -190,24 +190,25 @@ class Graph_chessboard():
         L = self.size
         m = self.m
         config_square = chess.worldsquare_board
+        
         loop = []
         
         #browse all points
         for j in range(0,L):
             for i in range(1,2*m):
                 if (i+j)%2 == 1:
-                    print("we are entering in the ",i,j,"boucle")
+                    
 
                     #checking if the current coordinates is already in a loop
                     not_in_a_loop = True
                     for loop_number in range (len(loop)):
-                        if (i,j) in loop[loop_number]:
+                        if (i,j,0,0) in loop[loop_number]:
                             not_in_a_loop = False
 
                     #if not finding the new loop associated with this coordinates
                     if not_in_a_loop:
-                        print(i,j,"is not in already in a loop")
-                        local_loop = [(i,j)]
+                        
+                        local_loop = [(i,j,0,0)]
 
                         a,b = i,j #a, b the changing indices
                         if i == 2*m:
@@ -222,21 +223,21 @@ class Graph_chessboard():
                             track_outward = True #to verify in which case we are
                             key +=1 #a verification that the algorithm will not loop infinitly,if key>500 return False
                             
-                            print("looking in square",a,b,"arrow",rho,sigma)
-                            v=vertex.to_vertices(config_square[a][b])
-                            print("vertex de ",a,b,": ", v)
-                            # outward arrow
-                            if (a+rho,b+sigma) == (i,j) and len(local_loop)>1:
-                                print("coordinates",i,j, "already find,end of the loop")
+                            #if we already have that coordonates in the local_loop we break
+                            if (a,b,rho,sigma) == (i,j,0,0) and len(local_loop)>1:
+                                if local_loop[-1] == local_loop[0]:
+                                    local_loop = local_loop[1:]
                                 loop.append(local_loop)
-                                print("end of the local loop")
-                                print(loop)
                                 break
+                            
+
+                            v=vertex.to_vertices(config_square[a][b])
+                            # outward arrow
                             if v[rho][sigma] == -1:
-                                print("outward arrow")
+                                
                                 # upper square
                                 if rho == 0:
-                                    print("ok1")
+                                    
                                     a=a-1 if a!=0 else 2*m-1
                                     # left
                                     if sigma==0:
@@ -249,7 +250,7 @@ class Graph_chessboard():
                                 
                                 # lower square
                                 else:
-                                    print("ok2")
+                                    
                                     a=(a+1)%(2*m)
                                     if sigma == 0:
                                         b=b-1 if b!=0 else L-1
@@ -257,16 +258,15 @@ class Graph_chessboard():
                                     else:
                                         b=(b+1)%L
                                         rho, sigma=0, 0
-                                
+                            
 
                             # inward arrow 
                             else:
-                                print("inward arrow")
+                                
                                 track_outward = False
                                 # find the outward arrows according to the graph_board
 
                                 bu_t =  config_graph[a][b]._get_breakup_type()
-                                print(bu_t)
                                 if bu_t == 1:
                                     if rho == 0:
                                         rho = 1
@@ -284,20 +284,68 @@ class Graph_chessboard():
                                         rho, sigma = 0,0
                                     else: 
                                         rho,sigma = sigma, rho
+                                
 
-                            print("new square: ",a,b, "with arrow", rho, sigma)
+                            
+                            local_loop.append((a,b,rho,sigma))
+                                
 
-                            if track_outward:
-                                print("adding last coodinates to local loop")
-                                local_loop.append((a+rho,b+sigma))
-                                print(local_loop)
-
-                            if key == 500: 
+                            if key == 1000: 
                                 print("échec du while true")
                                 return False
 
-        print("loop done")       
-        return loop
+         
+        
+        return loop 
+
+    def _do_loop_update(self,chess):
+        "do a loop update"
+        #config_graph = self.graph_chessboard 
+        L = self.size
+        m = self.m
+        loop = self._get_loops2(chess)
+        
+        #do the change with prob 1/2
+        for i in range (len(loop)):
+            test = rnd.randint(1,3)
+            
+            if test == 1:
+                path = loop[i]
+
+                #if the first arrow is inward we delete it and place it at the end of the loop
+                #the first arrow is then always outward and we can flip two by two
+                
+                a,b = path[0][0],path[0][1]
+
+                v=vertex.to_vertices(chess.worldsquare_board[a][b])
+                
+                 #putting the inward and outward arrow near each other
+                if v[path[0][2]][path[0][3]]== -1:
+                    path = np.vstack((path,path[0]))
+                    path = path[1:]
+                
+                
+               
+                
+                # flip the arrows and change the squares
+                for k in range(0,len(path),2):
+                    a,b = path[k][0],path[k][1]
+                        
+                    v=vertex.to_vertices(chess.worldsquare_board[a][b])
+                    v[path[k][2]][path[k][3]]*=-1
+                    v[path[k+1][2]][path[k+1][3]]*=-1
+                    
+                    n=vertex.to_square(v)
+                    if n!=0:
+                        chess.worldsquare_board[a][b]._update(n)
+            
+                    
+        chess._update_wordlines_board()
+        self._update_graph_chessboard(chess)
+        print("loop done")
+
+
+
                         
                        
 

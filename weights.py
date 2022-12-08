@@ -5,12 +5,10 @@ def prob(n: int, breakup_type: int, Dtau: float, Jx: float, Jz: float):
     '''Returns the probability of an allowed breakup on a vertex (<->square type)'''
     
     # weights of vertices
-    w1=np.exp(Dtau*Jx/4)*np.cosh(Dtau*Jx/2)
-    w2=np.exp(-Dtau*Jx/4)*np.sinh(Dtau*Jx/2)
+    w1=np.exp(Dtau*Jz/4)*np.cosh(Dtau*Jx/2)
+    w2=np.exp(-Dtau*Jz/4)*np.sinh(Dtau*Jx/2)
     w3=np.exp(-Dtau*Jz/4)
-    print("W1:",w1)
-    print("W2:",w2)
-    print("w3:",w3)
+    
     # weights of plaquette-graphs
     # vertical
     if breakup_type==1:

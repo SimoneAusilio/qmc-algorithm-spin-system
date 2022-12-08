@@ -71,6 +71,8 @@ class Chessboard():
         conf=configuration.Configuration(self)
         return np.average(np.array([conf._get_energy(i) for i in range(2*conf.m)]))/conf.size
 
+    
+
     def _get_worldlines_board(self):
         "return a liste line with all the worldlines in it"
         config = self.worldsquare_board 
@@ -99,6 +101,9 @@ class Chessboard():
                         lines.append([(i,j),(i+1,j+1)])
         
         return lines
+
+    def _update_wordlines_board(self):
+        self.worldlines_board = self._get_worldlines_board()
         
     def _plot_chessboard_image(self):
         "plot the chessboard with its current wordlines"
