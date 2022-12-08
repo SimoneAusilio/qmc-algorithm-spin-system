@@ -10,10 +10,14 @@ def to_binary_str(bin_num, L):
     # taken from https://stackoverflow.com/a/13081133
     if bin_num==None:
         return None
-    s=str(bin(bin_num))[2:]
-    return [bit for bit in s]
+    # check if length of binary number corresponds to L
+    l=len(bin(bin_num)[2:]) # take out initial 0b
+    string=''
+    if l!=L:
+        string+='0'*(L-l)
+    string+=str(bin(bin_num))[2:]
+    return [bit for bit in string]
 
-# TODO
 def to_binary_num(bin_str):
     '''Converts from binary string to binary spin configuration'''
     # invalid string
@@ -22,75 +26,70 @@ def to_binary_num(bin_str):
         return None
     # format list to string
     # taken from https://stackoverflow.com/a/47851872
-    s=''
+    string=''
     for el in bin_str:
-        s+=el
-    num=int(s, 2)
-    return num
+        string+=el
+    return int(string, 2)
 
-print(to_binary_num(["1", "0", "1"]))
-
-def S_up(bin_num, i):
+def S_up(bin_num, i, L):
     '''Returns the binary number associated with the raising of the i-th spin'''
     if bin_num==None:
         return None
-    list=to_binary_str(bin_num)
+    list=to_binary_str(bin_num, L)
     # None is returned when a spin up is raised
     list[i]='1' if list[i]=='0' else None
     return to_binary_num(list)
 
-def S_down(bin_num, i):
+def S_down(bin_num, i, L):
     '''Returns the binary number associated with the lowering of the i-th spin'''
     if bin_num==None:
         return None
-    list=to_binary_str(bin_num)
+    list=to_binary_str(bin_num, L)
     # None is returned when a spin down is lowered
     list[i]='0' if list[i]=='1' else None
     return to_binary_num(list)
 
-def S_z(bin_num):
+def S_z(bin_num, L):
     '''Returns the eigenvalue associated to the application of the S_z operators
     to the configuration'''
     if bin_num==None:
         return None
-    bin_str=to_binary_str(bin_num)
+    bin_str=to_binary_str(bin_num, L)
     N=len(bin_str)
     val=0.
-    for i in range(N):
-        val+=0.25 if bin_str[i]==bin_str[(i+1)%N] else -0.25
+    # N=2: only one link
+    if N==2:
+        val=0.25 if bin_str[0]==bin_str[1] else -0.25
+    # N!=2: N links
+    else:
+        for i in range(N):
+            # (-)0.5*0.5 if spin are (anti)parallel
+            val+=0.25 if bin_str[i]==bin_str[(i+1)%N] else -0.25
     return val
 
-def hamiltonian(bin_num):
+def hamiltonian(bin_num, L):
     '''Returns a list of spin configurations deriving from the application
     of the raising and lowering operators of the hamiltonian to the original one'''
-    N=len(to_binary_str(bin_num))
+    N=len(to_binary_str(bin_num, L))
     list=[]
     for i in range(N):
-        a=S_down(bin_num, (i+1)%N)
-        b=S_up(bin_num, (i+1)%N)
-        list.append(S_up(a, i))
-        list.append(S_down(b, i))
+        a=S_down(bin_num, (i+1)%N, L)
+        b=S_up(bin_num, (i+1)%N, L)
+        list.append(S_up(a, i, L))
+        list.append(S_down(b, i, L))
     return list
 
-# print(hamiltonian(0b110))
-
-def hamiltonian_matrix(base, Jx, Jz):
+def hamiltonian_matrix(L, Jx, Jz):
     '''Calculates the hamiltonian matrix in the input base'''
-    L=len(base)
-    H=np.zeros((L, L))
-    for i in range(L):
-        for j in range(i, L):
-            for k in hamiltonian(bin(j)):
-                H[i][j]+=0.5*Jx if bin(i)==k else 0
-            if j==i:
-                H[i][j]+=Jz*S_z(bin(i))
+    P=2**L
+    H=np.zeros((P, P))
+    for i in range(P):
+        H[i][i]+=Jz*S_z(i, L)
+        for j in range(i, P):
+            H[i][j]+=0.5*Jx if i in hamiltonian(j, L) else 0
             if j!=i:
                 H[j][i]=H[i][j]
     return H
 
-def construct_basis(N):
-    '''Constructs a basis of possible configurations with binary numbers'''
-    return [bin(i) for i in range(2**N)]
-
-# energies=eigh(hamiltonian_matrix(construct_basis(2), Jx=1, Jz=2))
-# print(energies)
+energies=eigh(hamiltonian_matrix(2, Jx=1, Jz=2))[0]
+print(energies)
