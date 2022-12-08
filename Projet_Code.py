@@ -44,10 +44,12 @@ class Chessboard():
                     self.worldsquare_board[i][j] = np.nan
                 else:
                     "instantiating white squares"
-                    if j%2 == 0:
+                    if j%4 == 0 and i%2 == 1:
                         self.worldsquare_board[i][j] = Square(2)
-                    else:
+                    elif j%4 == 1 and i%2 == 0:
                         self.worldsquare_board[i][j] = Square(1)
+                    else: 
+                        self.worldsquare_board[i][j] = Square(6)
 
         "initializing the lines of the worldboard"
         self.worldlines_board = self._get_worldlines_board()

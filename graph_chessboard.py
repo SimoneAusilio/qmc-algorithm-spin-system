@@ -342,7 +342,7 @@ class Graph_chessboard():
                     
         chess._update_wordlines_board()
         self._update_graph_chessboard(chess)
-        print("loop done")
+        
 
 
 

@@ -5,14 +5,16 @@ from matplotlib.animation import FuncAnimation
 import Projet_Code
 import configuration
 import functools
+import graph_chessboard
 import vertex
 
-L=6
-Beta=20
-m=3
-Jx=1
-Jz=2
+L=16
+Beta=2
+m=8
+Jx=3
+Jz=1
 chess=Projet_Code.Chessboard(L, Beta, m, Jx, Jz)
+chess_graph = graph_chessboard.Graph_chessboard(chess)
 conf=configuration.Configuration(chess)
 
 length_cycle=100    # number of update trials (arbitrary for the moment)
@@ -34,8 +36,9 @@ ax2=fig.add_subplot(1, 2, 2)
 ax2.set_title("Energy per spin")
 curve, =ax2.plot([], [], label = "Energy value")
 average, =ax2.plot([],[], label = "Average energy")
+plt.legend()
 ax2.set_xlim(0, N)
-ax2.set_ylim(-0.5, 0)
+ax2.set_ylim(-1, 0)
 
 
 
@@ -47,7 +50,7 @@ def worldline_anim(n):
     '''Animation function for update algorithm'''
     # update trial
     for i in range(length_cycle):
-        vertex.loop(chess)
+        chess_graph._do_loop_update(chess)
     conf._update_configuration(chess)
     e=np.average(np.array([conf._get_energy(i) for i in range(2*conf.m)]))/conf.size
 
@@ -79,7 +82,7 @@ def worldline_anim(n):
 
     return (lines, curve, avrg_e)
 
-animation=FuncAnimation(fig, worldline_anim, interval=100, blit=False)
+animation=FuncAnimation(fig, worldline_anim, interval=1, blit=False)
 plt.show()
 
 

@@ -6,11 +6,11 @@ import Projet_Code
 import configuration
 import functools
 
-L=6
-Beta=20
-m=3
-Jx=1
-Jz=2
+L=16
+Beta=2
+m=8
+Jx=3
+Jz=1
 chess=Projet_Code.Chessboard(L, Beta, m, Jx, Jz)
 conf=configuration.Configuration(chess)
 
@@ -33,6 +33,7 @@ ax2=fig.add_subplot(1, 2, 2)
 ax2.set_title("Energy per spin")
 curve, =ax2.plot([], [], label = "Energy value")
 average, =ax2.plot([],[], label = "Average energy")
+plt.legend()
 ax2.set_xlim(0, N)
 ax2.set_ylim(-1, 1)
 
