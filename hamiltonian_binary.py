@@ -83,6 +83,8 @@ def hamiltonian_matrix(L, Jx, Jz):
     '''Calculates the hamiltonian matrix in the input base'''
     P=2**L
     H=np.zeros((P, P))
+    # termes off-diagonal can only be Jx/2
+    # termes on diagonal depend on sum of products of spin couples
     for i in range(P):
         H[i][i]+=Jz*S_z(i, L)
         for j in range(i, P):
