@@ -8,9 +8,9 @@ import functools
 import graph_chessboard
 import vertex
 
-L=16
-Beta=2
-m=8
+L=4
+Beta=4
+m=12
 Jx=3
 Jz=1
 chess=Projet_Code.Chessboard(L, Beta, m, Jx, Jz)
@@ -23,22 +23,39 @@ N=200   # time steps
 # plot worldline configuration and energy (two-panel figure)
 fig=plt.figure(figsize=(10, 5))
 # worldline configuration
-ax1=fig.add_subplot(1, 2, 1)
+ax1=fig.add_subplot(1, 3, 1)
 # ax1.set_title("Worldline configuration")
 im=ax1.imshow(chess.binary_chessboard, cmap='binary_r', interpolation='nearest', extent=chess.extent, alpha=1, aspect=1)
 color_red=(1, 0, 0, 1)
 lines=chess.worldlines_board
 lc=mc.LineCollection(lines, colors=color_red, linewidths=4)
 ax1.add_collection(lc)
+ax1.set_title("Worldlines configuration")
+ax1.set_xlabel("Chaine size L")
+ax1.set_ylabel("imaginary axes m")
+
+
+
+ax2=fig.add_subplot(1, 3, 2)
+ax2.set_title("Worldbreakup configuration")
+im=ax2.imshow(chess.binary_chessboard, cmap='binary_r', interpolation='nearest', extent=chess.extent, alpha=1, aspect=1)
+color_red=(1, 0, 0, 1)
+lines2=chess_graph.lines
+lc2=mc.LineCollection(lines2, colors=color_red, linewidths=4)
+ax2.add_collection(lc2)
+ax2.set_title("Plaquette graph configuration")
+ax2.set_xlabel("Chaine size L")
+ax2.set_ylabel("imaginary axes m")
+
 
 # energy per spin
-ax2=fig.add_subplot(1, 2, 2)
-ax2.set_title("Energy per spin")
-curve, =ax2.plot([], [], label = "Energy value")
-average, =ax2.plot([],[], label = "Average energy")
+ax3=fig.add_subplot(1, 3, 3)
+ax3.set_title("Energy per spin")
+curve, =ax3.plot([], [], label = "Energy value")
+average, =ax3.plot([],[], label = "Average energy")
 plt.legend()
-ax2.set_xlim(0, N)
-ax2.set_ylim(-1, 0)
+ax3.set_xlim(0, N)
+ax3.set_ylim(-1, 0)
 
 
 
@@ -58,6 +75,10 @@ def worldline_anim(n):
     current_lines=chess._get_worldlines_board()
     current_lc=mc.LineCollection(current_lines, colors=color_red, linewidths=4)
     ax1.collections[0].set_segments(current_lines)
+
+    current_lines_graph=chess_graph._get_lines_graphboard(chess)
+    current_lc_graph=mc.LineCollection(current_lines_graph, colors=color_red, linewidths=4)
+    ax2.collections[0].set_segments(current_lines_graph)
     
     
     # plot update (right)
@@ -80,7 +101,7 @@ def worldline_anim(n):
     curve.set_data(time, energ)
     average.set_data(time,avrg_e)
 
-    return (lines, curve, avrg_e)
+    return (lines, curve, average)
 
 animation=FuncAnimation(fig, worldline_anim, interval=1, blit=False)
 plt.show()

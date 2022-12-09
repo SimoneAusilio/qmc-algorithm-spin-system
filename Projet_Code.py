@@ -7,7 +7,7 @@ import configuration
 
 class Chessboard():
     "A Chessboard with worldlines"
-    def __init__(self,L,Beta,m,Jx,Jz):
+    def __init__(self,L,Beta,m,Jx,Jz,conf_init):
         "private variables size & extent, weight_list, binary_chessboard, worldsquare_board, worldlines_board"
         self.Jx = Jx
         self.Jz = Jz
@@ -34,22 +34,8 @@ class Chessboard():
         z1 = np.add.outer(range(2*m), range(L)) % 2
         self.binary_chessboard = z1
         
-        "initializing the white square of the chessboard with fixed wordline configuration"
-        self.worldsquare_board = np.empty((2*m,L), dtype=Square)
-
-        for j in range(L):
-            for i in range(2*m):
-                if (i+j)%2 == 0:
-                    "if there are black square, no information is needed"
-                    self.worldsquare_board[i][j] = np.nan
-                else:
-                    "instantiating white squares"
-                    if j%4 == 0 and i%2 == 1:
-                        self.worldsquare_board[i][j] = Square(2)
-                    elif j%4 == 1 and i%2 == 0:
-                        self.worldsquare_board[i][j] = Square(1)
-                    else: 
-                        self.worldsquare_board[i][j] = Square(6)
+        self.worldsquare_board = conf_init
+        
 
         "initializing the lines of the worldboard"
         self.worldlines_board = self._get_worldlines_board()

@@ -44,6 +44,7 @@ class Graph_chessboard():
                         else : 
                             tab[i][j] = plaquette_graph(4)
         self.graph_chessboard = tab
+        #self.lines = self._get_lines_graphboard(chess)
         return tab
         
     def _get_lines_graphboard(self,chess):

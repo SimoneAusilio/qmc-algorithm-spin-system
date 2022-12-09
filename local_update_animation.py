@@ -6,7 +6,7 @@ import Projet_Code
 import configuration
 import functools
 
-L=16
+L=2
 Beta=2
 m=8
 Jx=3
@@ -35,7 +35,7 @@ curve, =ax2.plot([], [], label = "Energy value")
 average, =ax2.plot([],[], label = "Average energy")
 plt.legend()
 ax2.set_xlim(0, N)
-ax2.set_ylim(-1, 1)
+ax2.set_ylim(-1, 0)
 
 
 
