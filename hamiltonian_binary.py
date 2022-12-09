@@ -93,27 +93,12 @@ def hamiltonian_matrix(L, Jx, Jz):
                 H[j][i]=H[i][j]
     return H
 
-energies=eigh(hamiltonian_matrix(3, Jx=3, Jz=1))[0]
-print(np.average(energies))
-
-'''
-
-import numpy as np
-
-def calculate_hamiltonian(n: int, couplings: List[float]) -> np.ndarray:
-    # Create a 2x2 identity matrix
-    I = np.array([[1, 0], [0, 1]])
-    
-    # Create a 2x2 Pauli-X matrix
-    X = np.array([[0, 1], [1, 0]])
-    
-    # Create the Hamiltonian matrix, with the first and last spins coupled
-    # to their neighbors with the specified coupling constants, and all other
-    # spins coupled to their two neighbors with the specified coupling constants
-    H = couplings[0] * (np.kron(X, I) + np.kron(I, X))
-    for i in range(1, n - 1):
-        H += couplings[i] * (np.kron(X, np.kron(np.eye(2**i), X)) + np.kron(np.kron(np.eye(2**i), X), X))
-    
-    return H
-
-calculate_hamiltonian(2,[])'''
+def avg_enery(L, Jx, Jz, beta):
+    '''Returns the weighted (Boltzmann weights) average of energy eigenvalues'''
+    energies=eigh(hamiltonian_matrix(L, Jx, Jz))[0]
+    m=0.
+    z=0.
+    for e in energies:
+        m+=np.exp(-beta*e)*e
+        z+=np.exp(-beta*e)
+    return m/z
