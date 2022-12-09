@@ -93,5 +93,5 @@ def hamiltonian_matrix(L, Jx, Jz):
                 H[j][i]=H[i][j]
     return H
 
-energies=eigh(hamiltonian_matrix(2, Jx=1, Jz=2))[0]
-print(energies)
+energies=eigh(hamiltonian_matrix(4, Jx=3, Jz=1))[0]
+print(np.average(energies))
