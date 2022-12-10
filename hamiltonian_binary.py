@@ -67,6 +67,19 @@ def S_z(bin_num, L):
             val+=0.25 if bin_str[i]==bin_str[(i+1)%N] else -0.25
     return val
 
+def find_config(L, n_up):
+    '''Returns a list with all configurations with n_up spins up'''
+    list=[]
+    for i in range(2**L):
+        string=to_binary_str(i, L)
+        count=0
+        for j in string:
+            if j=='1':
+                count+=1
+        if count==n_up:
+            list.append(i)
+    return list
+
 def hamiltonian(bin_num, L):
     '''Returns a list of spin configurations deriving from the application
     of the raising and lowering operators of the hamiltonian to the original one'''
@@ -79,23 +92,23 @@ def hamiltonian(bin_num, L):
         list.append(S_down(b, i, L))
     return list
 
-def hamiltonian_matrix(L, Jx, Jz):
+def hamiltonian_matrix(basis, L, Jx, Jz):
     '''Calculates the hamiltonian matrix in the input base'''
-    P=2**L
+    P=len(basis)
     H=np.zeros((P, P))
     # termes off-diagonal can only be Jx/2
     # termes on diagonal depend on sum of products of spin couples
     for i in range(P):
-        H[i][i]+=Jz*S_z(i, L)
+        H[i][i]+=Jz*S_z(basis[i], L)
         for j in range(i, P):
-            H[i][j]+=0.5*Jx if i in hamiltonian(j, L) else 0
+            H[i][j]+=0.5*Jx if basis[i] in hamiltonian(basis[j], L) else 0
             if j!=i:
                 H[j][i]=H[i][j]
     return H
 
-def avg_enery(L, Jx, Jz, beta):
+def avg_energy(basis, L, Jx, Jz, beta):
     '''Returns the weighted (Boltzmann weights) average of energy eigenvalues'''
-    energies=eigh(hamiltonian_matrix(L, Jx, Jz))[0]
+    energies=eigh(hamiltonian_matrix(basis, L, Jx, Jz))[0]
     m=0.
     z=0.
     for e in energies:
