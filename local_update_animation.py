@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import collections  as mc 
 from matplotlib.animation import FuncAnimation
-import Projet_Code
+import Worldline_chessboard
 import configuration
 import functools
 

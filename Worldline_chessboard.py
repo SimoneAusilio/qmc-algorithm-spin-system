@@ -108,6 +108,9 @@ class Chessboard():
         lc = mc.LineCollection(lines, colors=color_red, linewidths=4)
         ax.add_collection(lc)
         ax.xaxis.tick_top()
+        ax.set_title("Worldline configuration")
+        ax.set_xlabel("Chaine size L")
+        ax.set_ylabel("imaginary axes m")
 
         plt.show()
 

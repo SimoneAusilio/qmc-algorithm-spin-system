@@ -1,4 +1,4 @@
-import Projet_Code
+import Worldline_chessboard
 from breakup_graph import plaquette_graph
 import numpy as np
 import numpy.random as rnd
@@ -90,6 +90,9 @@ class Graph_chessboard():
         lc = mc.LineCollection(lines, colors=color_red, linewidths=4)
         ax.add_collection(lc)
         ax.xaxis.tick_top()
+        ax.set_title("Graph configuration")
+        ax.set_xlabel("Chaine size L")
+        ax.set_ylabel("imaginary axes m")
 
         plt.show()
     

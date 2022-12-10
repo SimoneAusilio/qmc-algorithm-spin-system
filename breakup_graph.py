@@ -1,5 +1,4 @@
-#import weights
-
+""" class of plaquette graph just defined by their type """
 class plaquette_graph():
     def __init__(self,breakup_type):
         self.breakup_type = breakup_type
@@ -7,7 +6,4 @@ class plaquette_graph():
 
     def _get_breakup_type(self):
         return self.breakup_type
-    
-    #def _get_breakup_weight(self):
-    #    return self.weight
-
+   
